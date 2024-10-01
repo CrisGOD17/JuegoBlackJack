@@ -3,17 +3,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.crisprueba.juegoblackjack;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
+
 /**
  *
  * @author crist
  */
-
-
-
-
 class Carta {
+
     private String palo;
     private String valor;
     private int valorNumerico;
@@ -46,7 +46,11 @@ class Carta {
     }
 }
 
-class Baraja {
+
+
+
+ class Baraja {
+
     private ArrayList<Carta> cartas = new ArrayList<>();
     private Random random = new Random();
 
@@ -55,7 +59,7 @@ class Baraja {
         String[] valores = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
         int[] valoresNumericos = {2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11};
 
-        // Generar todas las cartas
+       
         for (String palo : palos) {
             for (int i = 0; i < valores.length; i++) {
                 cartas.add(new Carta(palo, valores[i], valoresNumericos[i]));
@@ -63,39 +67,93 @@ class Baraja {
         }
     }
 
+ 
     public Carta darCartaAleatoria() {
+        if (cartas.isEmpty()) {
+            throw new IllegalStateException("No quedan cartas en la baraja");
+        }
         int indice = random.nextInt(cartas.size());
-        return cartas.get(indice);
+        Carta cartaSeleccionada = cartas.get(indice);
+        cartas.remove(indice); 
+        return cartaSeleccionada;
+    }
+
+    // Método para mezclar la baraja (opcional)
+    public void barajar() {
+        Collections.shuffle(cartas);
     }
 }
 
 
+class Puntuacion {
 
+    private int victorias;
+    private int derrotas;
+    private int empates;
+    private int saldo;
+
+    public Puntuacion(int saldoInicial) {
+        this.victorias = 0;
+        this.derrotas = 0;
+        this.empates = 0;
+        this.saldo = saldoInicial;
+    }
+
+    public void incrementarVictoria() {
+        victorias++;
+        saldo += 100; 
+    }
+
+    public void incrementarDerrota() {
+        derrotas++;
+        saldo -= 100;
+    }
+
+    public void incrementarEmpate() {
+        empates++;
+    }
+
+    public int getVictorias() {
+        return victorias;
+    }
+
+    public int getDerrotas() {
+        return derrotas;
+    }
+
+    public int getEmpates() {
+        return empates;
+    }
+
+    public int getSaldo() {
+        return saldo;
+    }
+
+    public void reiniciarPuntuacion() {
+        victorias = 0;
+        derrotas = 0;
+        empates = 0;
+        saldo = 0; 
+    }
+}
 
 public class PantallaJuego extends javax.swing.JFrame {
 
-    
-    
-     private Baraja baraja;
+    private Puntuacion puntuacion;
+    private Baraja baraja;
     private ArrayList<Carta> manoUsuario;
     private ArrayList<Carta> manoCasa;
-    
+
     /**
      * Creates new form PantallaJuego
      */
     public PantallaJuego() {
         initComponents();
+        puntuacion = new Puntuacion(1000);
         nuevoJuego();
-       
-      
+
     }
 
-    
-    
-    
-    
-    
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -105,12 +163,29 @@ public class PantallaJuego extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        labelVictorias = new javax.swing.JLabel();
+        labelEmpates = new javax.swing.JLabel();
+        labelDerrotas = new javax.swing.JLabel();
+        labelSaldo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
+
+        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton1.setText("Pedir Carta");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -118,13 +193,15 @@ public class PantallaJuego extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Nuevo Juego");
+        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jButton2.setText("Nueva Mano");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
+        jButton3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton3.setText("Completo");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -132,45 +209,122 @@ public class PantallaJuego extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setText("Victorias:");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel2.setText("Empates:");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel3.setText("Derrotas:");
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel4.setText("Saldo:");
+
+        labelVictorias.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        labelVictorias.setText("0");
+
+        labelEmpates.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        labelEmpates.setText("0");
+
+        labelDerrotas.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        labelDerrotas.setText("0");
+
+        labelSaldo.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        labelSaldo.setText("0");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(26, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(144, 144, 144)
+                                .addComponent(jButton2)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel3)
+                                    .addGap(1, 1, 1))
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(2, 2, 2)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel1))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(labelVictorias)
+                            .addComponent(labelEmpates)
+                            .addComponent(labelDerrotas)
+                            .addComponent(labelSaldo))
+                        .addGap(123, 123, 123))))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(labelSaldo))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(labelVictorias)
+                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(labelEmpates)
+                    .addComponent(jButton2))
+                .addGap(5, 5, 5)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(labelDerrotas)
+                    .addComponent(jButton3))
+                .addGap(20, 20, 20))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(27, 27, 27)
-                .addComponent(jButton2)
-                .addContainerGap(335, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(44, 44, 44)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
-                .addContainerGap(38, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    
-    private void ocultar(){
-    jButton1.setVisible(true);
-    jButton3.setVisible(true);
+    private void ocultar() {
+        jButton1.setVisible(false);
+        jButton3.setVisible(false);
     }
-    
-    
-    
-    
-      private void nuevoJuego() {
+
+    private void noocultar() {
+        jButton1.setVisible(true);
+        jButton3.setVisible(true);
+    }
+
+   
+
+    private void nuevoJuego() {
+        jTextArea1.setText("");
         baraja = new Baraja();
         manoUsuario = new ArrayList<>();
         manoCasa = new ArrayList<>();
@@ -178,12 +332,10 @@ public class PantallaJuego extends javax.swing.JFrame {
         manoUsuario.add(baraja.darCartaAleatoria());
         manoCasa.add(baraja.darCartaAleatoria());
         manoCasa.add(baraja.darCartaAleatoria());
-        ocultar();
         actualizarPantalla();
     }
 
-    
-     private int calcularValor(ArrayList<Carta> mano) {
+    private int calcularValor(ArrayList<Carta> mano) {
         int total = 0;
         int numAses = 0;
 
@@ -194,9 +346,9 @@ public class PantallaJuego extends javax.swing.JFrame {
             }
         }
 
-        // Ajustar el valor del As si es necesario
+       
         while (total > 21 && numAses > 0) {
-            total -= 10; // Si el total excede 21, contamos el As como 1 en lugar de 11
+            total -= 10; 
             numAses--;
         }
 
@@ -206,14 +358,18 @@ public class PantallaJuego extends javax.swing.JFrame {
     private void actualizarPantalla() {
         int valorUsuario = calcularValor(manoUsuario);
         int valorCasa = calcularValor(manoCasa);
+        String resultado;
+        String res = jTextArea1.getText();
 
-        System.out.println("Tu mano: " + manoUsuario + " (Valor: " + valorUsuario + ")");
-        System.out.println("Mano de la casa: " + manoCasa.get(0) + " y otra carta oculta");
-        System.out.println("");
+        resultado = res + "\n" + "Tu mano: " + manoUsuario + " (Valor: " + valorUsuario + ")" + "\n" + "Mano de la casa: " + manoCasa.get(0) + " y otra carta oculta";
+        jTextArea1.setText(resultado);
 
         if (valorUsuario > 21) {
-            System.out.println("Perdiste, tu puntuación es mayor a 21");
-            System.out.println("");
+            puntuacion.incrementarDerrota();
+            resultado = res + "\n" + "Tu mano: " + manoUsuario + " (Valor: " + valorUsuario + ")"
+                    + "\n" + "Mano de la casa: " + manoCasa.get(0) + " y otra carta oculta" + "\n"
+                    + "Perdiste, tu puntuación es mayor a 21";
+            jTextArea1.setText(resultado);
             ocultar();
         }
     }
@@ -222,49 +378,66 @@ public class PantallaJuego extends javax.swing.JFrame {
         int valorUsuario = calcularValor(manoUsuario);
         int valorCasa = calcularValor(manoCasa);
 
-        System.out.println("Tu mano: " + manoUsuario + " (Valor: " + valorUsuario + ")");
-        System.out.println("Mano de la casa: " + manoCasa + " (Valor: " + valorCasa + ")");
-        System.out.println("");
+        
+        jTextArea1.setText("");  
+
+        String resultado;
+        String res = jTextArea1.getText();
+
         while (valorCasa < 17) {
             manoCasa.add(baraja.darCartaAleatoria());
             valorCasa = calcularValor(manoCasa);
         }
 
         if (valorCasa > 21 || valorUsuario > valorCasa) {
-            System.out.println("¡Ganaste! El crupier se pasó o tienes mejor puntuación.");
-            System.out.println("");
+            puntuacion.incrementarVictoria();
+            resultado = "Tu mano: " + manoUsuario + " (Valor: " + valorUsuario + ")\n"
+                    + "Mano de la casa: " + manoCasa + " (Valor: " + valorCasa + ")\n"
+                    + "¡Ganaste! El crupier se pasó o tienes mejor puntuación.";
+            jTextArea1.setText(resultado);
             ocultar();
         } else if (valorCasa == valorUsuario) {
-            System.out.println("Empate.");
-            System.out.println("");
+            puntuacion.incrementarEmpate();
+            resultado = "Tu mano: " + manoUsuario + " (Valor: " + valorUsuario + ")\n"
+                    + "Mano de la casa: " + manoCasa + " (Valor: " + valorCasa + ")\n"
+                    + "Empate.";
+            jTextArea1.setText(resultado);
             ocultar();
         } else {
-            System.out.println("Perdiste, el crupier tiene mejor puntuación.");
-            System.out.println("");
+            puntuacion.incrementarDerrota();
+            resultado = "Tu mano: " + manoUsuario + " (Valor: " + valorUsuario + ")\n"
+                    + "Mano de la casa: " + manoCasa + " (Valor: " + valorCasa + ")\n"
+                    + "Perdiste, el crupier tiene mejor puntuación.";
+            jTextArea1.setText(resultado);
             ocultar();
         }
     }
 
-  
-    
+    private void actualizarInterfaz() {
+        // Aquí podrías actualizar labels o paneles para mostrar la puntuación
+        labelVictorias.setText("Victorias: " + puntuacion.getVictorias());
+        labelDerrotas.setText("Derrotas: " + puntuacion.getDerrotas());
+        labelEmpates.setText("Empates: " + puntuacion.getEmpates());
+        labelSaldo.setText("Saldo: " + puntuacion.getSaldo());
+    }
+
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-    manoUsuario.add(baraja.darCartaAleatoria());
-    actualizarPantalla();
-        
+        manoUsuario.add(baraja.darCartaAleatoria());
+        actualizarPantalla();
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-      nuevoJuego();
+        nuevoJuego();
+        noocultar();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         mostrarResultado();
-        jButton3.setVisible(false);
+        actualizarInterfaz();
     }//GEN-LAST:event_jButton3ActionPerformed
 
-
-    
-    
     /**
      * @param args the command line arguments
      */
@@ -304,5 +477,16 @@ public class PantallaJuego extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel labelDerrotas;
+    private javax.swing.JLabel labelEmpates;
+    private javax.swing.JLabel labelSaldo;
+    private javax.swing.JLabel labelVictorias;
     // End of variables declaration//GEN-END:variables
 }
